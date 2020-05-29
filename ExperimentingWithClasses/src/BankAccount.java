@@ -1,6 +1,6 @@
 
 public class BankAccount {
-    private double funds =0;
+    private double funds;
     private long accountNumber;
     private String customerName;
     private String customerEmail;
@@ -9,11 +9,22 @@ public class BankAccount {
     public void setFunds(double funds){
         this.funds +=funds;
     }
-    public void setData(String name, String email, int phoneNumber){
-        this.accountNumber= (long)(Math.random()*1000000000000l);
+
+    public BankAccount(String name, String email, int phoneNumber){
+        this.accountNumber= (long)(Math.random()*100_000_000_000_000l);
         this.customerName = name;
         this.customerEmail= email;
         this.customerPhoneNum = phoneNumber;
+    }
+
+
+    public BankAccount(String name, String email, int phoneNumber, double initialFunds){
+        this(name, email, phoneNumber);
+        this.funds = initialFunds;
+    }
+
+    public BankAccount(){
+        this("Unkown user", "Unknown mail", -1, 0);
     }
 
     public void getData(){
