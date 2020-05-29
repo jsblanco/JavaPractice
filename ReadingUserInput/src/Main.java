@@ -1,5 +1,3 @@
-package academy.learnprogramming;
-
 import java.util.Scanner;
 
 public class Main {
