@@ -29,7 +29,7 @@ public class Main {
         secondary.receiveDamage(daño);
         System.out.println(secondary.getHealth());
 
-        
+
         System.out.println("###################### Printer Challenge #######################");
 
 
