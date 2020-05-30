@@ -34,6 +34,6 @@ public class Main {
         atila.walk();
         atila.run();
         merluzo.swim();
-
+        Fish.drown();
     }
 }

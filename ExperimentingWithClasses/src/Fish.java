@@ -29,4 +29,8 @@ private int gills;
         System.out.println(getName()+" starts twisting his body");
     }
 
+    public static void drown(){
+        System.out.println("Los peces se ahogan fuera del agua, no dentro");
+    }
+
 }
