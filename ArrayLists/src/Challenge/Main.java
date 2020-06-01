@@ -28,25 +28,30 @@ public class Main {
         albums.get(0).addSong(new Song("Hold back the night", 6.21));
         albums.get(1).addSong(new Song("My name is Dark", 6.23));
         albums.get(1).addSong(new Song("Oblivion", 4.12));
-        albums.get(1).addSong(new Song("Kill V Maim", 3.35));
+        albums.get(1).addSong(new Song("Kill V Maim", 3.55));
         albums.get(2).addSong(new Song("Baka Mitai", 4.12));
-        albums.get(2).addSong(new Song("Justice", 4.12));
-        albums.get(2).addSong(new Song("24h Cinderella", 4.12));
+        albums.get(2).addSong(new Song("Justice", 3.28));
+        albums.get(2).addSong(new Song("24h Cinderella", 2.52));
 
-        addSongToPlaylist(playlist, albums.get(2),0);
-        addSongToPlaylist(playlist, albums.get(0),2);
-        addSongToPlaylist(playlist, albums.get(1),2);
-        addSongToPlaylist(playlist, albums.get(1),1);
-        addSongToPlaylist(playlist, albums.get(0),0);
-        addSongToPlaylist(playlist, albums.get(2),1);
+        addSongToPlaylist(playlist, albums, 2,0);
+        addSongToPlaylist(playlist, albums, 0,2);
+        addSongToPlaylist(playlist, albums, 1,2);
+        addSongToPlaylist(playlist, albums, 1,1);
+        addSongToPlaylist(playlist, albums, 0,0);
+        addSongToPlaylist(playlist, albums, 2,1);
+        addSongToPlaylist(playlist, albums, 9,9);
 
         playlist.printPlaylist();
         playPlaylist(playlist);
 
     }
 
-    private static void addSongToPlaylist(Playlist playlist, Album album, int song){
-        playlist.addSong(album, song);
+    private static void addSongToPlaylist(Playlist playlist, ArrayList albums, int album, int song){
+        if (album>-1&& albums.size()>album) {
+            Album thisAlbum = (Album) albums.get(album);
+            if (song>-1 && thisAlbum.getTracklist().size()> song)
+            playlist.addSong(thisAlbum, song);
+        }
     }
 
     private static void playPlaylist(Playlist playlist) {
