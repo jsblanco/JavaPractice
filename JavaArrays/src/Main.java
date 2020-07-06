@@ -19,12 +19,15 @@ public class Main {
         System.out.println("Arrays.toString(arrayClone) = " + Arrays.toString(arrayClone));
         System.out.println("Array mean value: "+getIntArrayMean(integerInput));
         System.out.println("Sorted array values: "+ Arrays.toString(sortArray(integerInput)));
+
+        String[] prueba = {"hola", "qué tal", "adios"};
+        Arrays.stream(prueba).map(value -> value+=" amigo");
+        System.out.println(prueba[0]+" "+ prueba[1]+" "+ prueba[2]);
     }
 
     public static int[] getIntegers(int number){
         System.out.println("Enter "+number+" integers:");
         int[] values =  new int[number];
-
         for (int i=0; i < number; i++){
             values[i] = scanner.nextInt();
             scanner.nextLine();
@@ -56,7 +59,6 @@ public class Main {
 
     public static double getIntArrayMean(int[] array){
         int sum=0;
-
         for (int i=0; i<array.length; i++){
             sum += array[i];
         }
@@ -70,7 +72,6 @@ public class Main {
             System.out.println(array[i]);
         }
          */
-
         for (int value : array) {
             System.out.println(value);
         }
