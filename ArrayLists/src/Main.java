@@ -71,7 +71,7 @@ public class Main {
         System.out.println("For Fulgrim!!");
     }
 
-    private static void checkLegion(LinkedList list) {
+    private static void checkLegion(LinkedList<String> list) {
         Scanner scanner = new Scanner(System.in);
         boolean end = false;
         boolean forward = true;
