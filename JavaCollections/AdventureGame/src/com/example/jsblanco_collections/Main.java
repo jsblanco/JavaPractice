@@ -1,12 +1,12 @@
 package com.example.jsblanco_collections;
 
-import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-    private static Map<Integer, Location> locations = new HashMap<Integer, Location>();
+    private static final Map<Integer, Location> locations = new HashMap<Integer, Location>();
+    private static int loc;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -22,7 +22,7 @@ public class Main {
         locations.get(1).addExit("S", 4);
         locations.get(1).addExit("E", 3);
         locations.get(1).addExit("W", 2);
-       // locations.get(1).addExit("Q", 0);
+        // locations.get(1).addExit("Q", 0);
         locations.get(2).addExit("N", 5);
         //locations.get(2).addExit("Q", 0);
         locations.get(3).addExit("W", 1);
@@ -36,33 +36,43 @@ public class Main {
 
         //Quitamos las Q para ponerlas en el constructor de la clase, ahorrando tiempo y código
 
+        initialWelcome();
+
+        while (true) {
+            System.out.println(locations.get(loc).getDescription());
+            if (loc == 0) break;
+
+            Map<String, Integer> exits = locations.get(loc).getExits();
+            stateExits(exits);
+
+            String direction = scanner.nextLine().toUpperCase();
+            changeLocation(exits, direction);
+        }
+    }
+
+    private static void initialWelcome() {
+        loc = 1;
 
         //El método split() es como en JS; si pones unas comillas vacías te parte la string por caracteres.
         String[] welcome = "¡Bienvenido a Kamurocho!<br>Comienza a explorar sus calles.".split("<br>");
-        for (String string : welcome){
+        for (String string : welcome) {
             System.out.println(string);
         }
-        int loc = 1;
-        while (true){
-            System.out.println(locations.get(loc).getDescription());
-            if (loc==0){
-                break;
-            }
-
-            Map<String, Integer> exits = locations.get(loc).getExits();
-            System.out.println("De aquí puedes ir a: ");
-
-            for (String exit: exits.keySet()) {
-                System.out.print(exit + ", ");
-            }
-            System.out.println();
-
-            String direction = scanner.nextLine().toUpperCase();
-            if (exits.containsKey(direction)){
-                loc = exits.get(direction);
-            } else {
-                System.out.println("No puedes ir ahí.");
-            }
-        }
     }
+
+    private static void stateExits(Map<String, Integer> exits) {
+        System.out.println("De aquí puedes ir a: ");
+        for (String exit : exits.keySet())
+            System.out.print(exit + ", ");
+        System.out.println();
+    }
+
+    private static void changeLocation(Map<String, Integer> exits, String direction) {
+        if (exits.containsKey(direction))
+            loc = exits.get(direction);
+        else
+            System.out.println("No puedes ir ahí.");
+    }
+
+
 }

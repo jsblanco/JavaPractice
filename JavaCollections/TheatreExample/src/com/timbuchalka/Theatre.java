@@ -15,13 +15,11 @@ public class Theatre {
         PRICE_ORDER = new Comparator<Seat>() {
             @Override
             public int compare(Seat seat1, Seat seat2) {
-                if (seat1.getPrice() < seat2.getPrice()) {
-                    return -1;
-                } else if (seat1.getPrice() > seat2.getPrice()) {
-                    return 1;
-                } else {
-                    return 0;
-                }
+                return seat1.getPrice() < seat2.getPrice()
+                        ? -1
+                        : seat1.getPrice() > seat2.getPrice()
+                        ? -1
+                        : 0;
             }
         };
     }
@@ -29,14 +27,13 @@ public class Theatre {
     public Theatre(String theatreName, int numRows, int seatsPerRow) {
         this.theatreName = theatreName;
 
-        int lastRow = 'A' + (numRows -1);
+        int lastRow = 'A' + (numRows - 1);
         for (char row = 'A'; row <= lastRow; row++) {
-            for(int seatNum = 1; seatNum <= seatsPerRow; seatNum++) {
+            for (int seatNum = 1; seatNum <= seatsPerRow; seatNum++) {
                 double price = 12.00;
-
-                if((row < 'D') && (seatNum >=4 && seatNum <=9)) {
+                if ((row < 'D') && (seatNum >= 4 && seatNum <= 9)) {
                     price = 14.00;
-                } else if((row > 'F') || (seatNum < 4 || seatNum > 9)) {
+                } else if ((row > 'F') || (seatNum < 4 || seatNum > 9)) {
                     price = 7.00;
                 }
 
@@ -82,7 +79,7 @@ public class Theatre {
         }
 
         public boolean reserve() {
-            if(!this.reserved) {
+            if (!this.reserved) {
                 this.reserved = true;
                 System.out.println("Seat " + seatNumber + " reserved");
                 return true;
@@ -92,7 +89,7 @@ public class Theatre {
         }
 
         public boolean cancel() {
-            if(this.reserved) {
+            if (this.reserved) {
                 this.reserved = false;
                 System.out.println("Reservation of seat " + seatNumber + " cancelled");
                 return true;
