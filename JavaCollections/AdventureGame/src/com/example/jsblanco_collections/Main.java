@@ -10,10 +10,7 @@ public class Main {
     private static int loc;
 
     public static void main(String[] args) {
-        populateLocations();
-        populateVocabulary();
-
-        initialWelcome();
+        startGame();
 
         while (true) {
             System.out.println(locations.get(loc).getDescription());
@@ -27,8 +24,10 @@ public class Main {
         }
     }
 
-    private static void initialWelcome() {
+    private static void startGame() {
         loc = 1;
+        populateLocations();
+        populateVocabulary();
 
         //El método split() es como en JS; si pones unas comillas vacías te parte la string por caracteres.
         String[] welcome = "¡Bienvenido a Kamurocho!<br>Comienza a explorar sus calles.".split("<br>");
@@ -74,30 +73,35 @@ public class Main {
     }
 
     private static void populateLocations() {
-        locations.put(0, new Location(0, "Te vas de Kamurocho por el arco de Tenkaichi St."));
-        locations.put(1, new Location(1, "Estás en la azotea de la Millenium Tower"));
-        locations.put(2, new Location(2, "Estás en el Sega de Theatre Sq. jugando a MesuKing"));
-        locations.put(3, new Location(3, "Estás en Earth Angel tomándote un copazo"));
-        locations.put(4, new Location(4, "Estás en Don Quijote, cantando la musiquilla"));
-        locations.put(5, new Location(5, "Estás en Kamurocho Hills, en la planta baja"));
+        locations.put(0, new Location(0, "Te vas de Kamurocho por el arco de Tenkaichi St.", null));
 
-        locations.get(1).addExit("N", 5);
-        locations.get(1).addExit("S", 4);
-        locations.get(1).addExit("E", 3);
-        locations.get(1).addExit("W", 2);
-        // locations.get(1).addExit("Q", 0);
-        locations.get(2).addExit("N", 5);
-        //locations.get(2).addExit("Q", 0);
-        locations.get(3).addExit("W", 1);
-        //locations.get(3).addExit("Q", 0);
-        locations.get(4).addExit("N", 1);
-        locations.get(4).addExit("W", 2);
-        //locations.get(4).addExit("Q", 0);
-        locations.get(5).addExit("S", 1);
-        locations.get(5).addExit("W", 2);
-        //locations.get(5).addExit("Q", 0);
+        Map<String, Integer> exits = new HashMap<>();
+        exits.put("N", 5);
+        exits.put("S", 4);
+        exits.put("E", 3);
+        exits.put("W", 2);
+        locations.put(1, new Location(1, "Estás en la azotea de la Millenium Tower", exits));
 
-        //Quitamos las Q para ponerlas en el constructor de la clase, ahorrando tiempo y código
+        exits = new HashMap<>();
+        exits.put("N", 5);
+        locations.put(2, new Location(2, "Estás en el Sega de Theatre Square jugando a MesuKing", exits));
+
+        exits = new HashMap<>();
+        exits.put("W", 1);
+        locations.put(3, new Location(3, "Estás en Earth Angel tomándote un copazo", exits));
+
+        exits = new HashMap<>();
+        exits.put("N", 1);
+        exits.put("W", 2);
+        locations.put(4, new Location(4, "Estás en Don Quijote, cantando la musiquilla", exits));
+
+        exits = new HashMap<>();
+        exits.put("Q", 1);
+        exits.put("W", 2);
+        locations.put(5, new Location(5, "Estás en Kamurocho Hills, en la planta baja", exits));
+
+//      Quitamos el método "addExit" y pasamos a añadir las salidas en el constructor para asegurarnos de que el objeto
+//      Location sea completamente inmutable una vez creado.
     }
 
     private static void populateVocabulary() {
