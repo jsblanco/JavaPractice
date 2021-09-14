@@ -6,51 +6,81 @@ import java.util.Map;
 import java.util.Set;
 
 public class Main {
-    private static final Map<String, HeavenlyBody> solarSystem = new HashMap<>();
+    private static final Map<HeavenlyBody.Key, HeavenlyBody> solarSystem = new HashMap<>();
     private static final Set<HeavenlyBody> planets = new HashSet<>();
     private static final Set<HeavenlyBody> moons = new HashSet<>();
 
     public static void main(String[] args) {
         populateSolarSystem();
+
         getPlanetsData();
-
-        for (HeavenlyBody planet: planets)
-            moons.addAll(planet.getSatellites());
-
         getMoonsData();
 
-        HeavenlyBody pluto = new HeavenlyBody("Pluto", 842, HeavenlyBody.BodyType.PLANET);
-        planets.add(pluto);
-        getPlanetsData();
+        testSymmetry();
+        testMapSubstitution();
+
+        getSolarSystemData();
     }
 
     public static void createNewPlanet(String name, double orbitalPeriod) {
-        HeavenlyBody planet = new HeavenlyBody(name, orbitalPeriod, HeavenlyBody.BodyType.PLANET);
-        solarSystem.put(planet.getName(), planet);
+        Planet planet = new Planet(name, orbitalPeriod);
+        solarSystem.put(HeavenlyBody.makeKey(name, HeavenlyBody.BodyTypes.PLANET), planet);
         planets.add(planet);
     }
 
     public static void createNewSatellite(String name, double orbitalPeriod, String planetName) {
-        HeavenlyBody moon = new HeavenlyBody(name, orbitalPeriod, HeavenlyBody.BodyType.MOON);
-        solarSystem.get(planetName).addSatellite(moon);
+        Moon moon = new Moon(name, orbitalPeriod);
+        solarSystem.put(HeavenlyBody.makeKey(name, HeavenlyBody.BodyTypes.PLANET), moon);
+        solarSystem.get(HeavenlyBody.makeKey(planetName, HeavenlyBody.BodyTypes.PLANET)).addSatellite(moon);
+        moons.add(moon);
+    }
+
+    public static void getSolarSystemData() {
+        System.out.println("Solar System heavenly objects:");
+        for (HeavenlyBody object : solarSystem.values())
+            System.out.println("\t" + object);
     }
 
     public static void getPlanetsData() {
         System.out.println("Planets in the Solar System:");
         for (HeavenlyBody planet : planets)
-            if (planet.getSatellites().size() == 0)
-                System.out.println("\t" + planet.getName() + ", with an orbital period of " + planet.getOrbitalPeriod() + " and no moons");
-            else {
-                System.out.println("\t" + planet.getName() + ", with an orbital period of " + planet.getOrbitalPeriod() + " and the following moons: ");
-                for (HeavenlyBody moon : planet.getSatellites())
-                    System.out.println("\t\t" + moon.getName());
-            };
+            System.out.println("\t" + planet);
     }
 
     public static void getMoonsData() {
         System.out.println("Moons in the Solar System:");
-        for (HeavenlyBody moon: moons)
-            System.out.println("\t" + moon.getName());
+        for (HeavenlyBody moon : moons)
+            System.out.println("\t" + moon.getKey().getName());
+    }
+
+    private static void testSymmetry() {
+        HeavenlyBody earth1 = new Planet("Earth", 365);
+        HeavenlyBody earth2 = new Planet("Earth", 365);
+        HeavenlyBody moon = new Moon("Moon", 27);
+
+        System.out.println();
+        System.out.print("Equal HeavenlyObjects are identified as such: " + (earth1.equals(earth2) && earth2.equals(earth1)));
+
+        System.out.println();
+        System.out.println("Different HeavenlyObjects should be distinguished: " + (!earth1.equals(moon) && !moon.equals(earth1)));
+
+    }
+
+    private static void testMapSubstitution() {
+        createNewPlanet("Pluto", 248);
+        HeavenlyBody pluto = new DwarfPlanet("Pluto", 842);
+        planets.add(pluto);
+
+        solarSystem.put(pluto.getKey(), pluto);
+        System.out.println(
+                "Pluto should appear both as a planet and as a dwarf planet: "
+                        + solarSystem.get(HeavenlyBody.makeKey(pluto.getKey().getName(), HeavenlyBody.BodyTypes.PLANET))
+                        + " "
+                        + solarSystem.get(HeavenlyBody.makeKey(pluto.getKey().getName(), HeavenlyBody.BodyTypes.DWARF_PLANET)));
+
+        pluto = new Planet("Pluto", 842);
+        solarSystem.put(pluto.getKey(), pluto);
+        System.out.println("Pluto's orbital period should be 842: " + solarSystem.get(HeavenlyBody.makeKey(pluto.getKey().getName(), HeavenlyBody.BodyTypes.PLANET)));
     }
 
     private static void populateSolarSystem() {
