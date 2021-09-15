@@ -42,13 +42,18 @@ public class Main {
 
 
         System.out.print("Should fail when attempting to reserve more items than the available stock:\n\t");
-        addToBasket(secondaryBasket, "Generals", 5);
+        addToBasket(myBasket, "Generals", 5);
         System.out.print("Should not let you reserve items when another basket has all stock reserved:\n\t");
-        addToBasket(secondaryBasket, "Generals", 3);
-        seeItemInBasket(secondaryBasket, "Generals");
+        addToBasket(myBasket, "Generals", 3);
+        seeItemInBasket(myBasket, "Generals");
         System.out.print("\t");
         addToBasket(secondaryBasket, "Generals", 1);
-
+        System.out.print("Should not let you remove more items from a basket than there are in it:\n\t");
+        removeFromBasket(myBasket, "Generals", 4);
+        System.out.print("Should let you remove less items from a basket than there are in it:\n\t");
+        removeFromBasket(myBasket, "Generals", 2);
+        System.out.print("Should only be 1 general left in the basket:\n\t");
+        seeItemInBasket(myBasket, "Generals");
     }
 
     private static void getStockAndReservedForItem(String name) {
@@ -118,6 +123,19 @@ public class Main {
         stockList.reserveStock(name, -freedStock);
         System.out.println("Removed " + freedStock + " units of " + name + " from your basket");
         return freedStock;
+    }
+
+    public static int removeFromBasket(Basket basket, String name, int quantity) {
+        if (itemIsNull(name)) return 0;
+        StockItem stockItem = stockList.get(name);
+        int freedStock = basket.removeFromBasket(stockItem, quantity);
+        if (freedStock != 0) {
+            stockList.reserveStock(name, -freedStock);
+            System.out.println("Removed " + quantity + " units of " + name + " from your basket");
+        }
+        return freedStock;
+
+
     }
 
     public static int addItemToList(String name, double price, int quantity) {

@@ -16,7 +16,7 @@ public class Basket {
 
     public String getReservedItemInfo(StockItem item) {
         int reservedItems = list.getOrDefault(item, 0);
-        return item.getName()+": "+reservedItems+" in basket "+name;
+        return item.getName() + ": " + reservedItems + " in basket " + name;
     }
 
     public int addToBasket(StockItem item, int quantity) {
@@ -24,6 +24,20 @@ public class Basket {
             int inBasket = list.getOrDefault(item, 0);
             list.put(item, inBasket + quantity);
             return inBasket;
+        }
+        return 0;
+    }
+
+    public int removeFromBasket(StockItem item, int quantity) {
+        if ((item != null)) {
+            int inBasket = list.getOrDefault(item, 0);
+            if (quantity <= inBasket) {
+                list.put(item, inBasket - quantity);
+                return quantity;
+            } else
+                System.out.println("Can't remove " + quantity + " units of "
+                        + item.getName() + " from this basket, since "
+                        + (inBasket == 0 ? "none are included" : "it only contains " + inBasket + " units"));
         }
         return 0;
     }
