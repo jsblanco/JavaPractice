@@ -1,3 +1,5 @@
+package mySolution;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,10 +21,10 @@ public class StockList {
         return item.quantityInStock();
     }
 
-    public int sellStock(String item, int quantity) {
+    public int reserveStock(String item, int quantity) {
         StockItem inStock = list.getOrDefault(item, null);
-        if (inStock != null && inStock.quantityInStock() >= quantity && quantity > 0) {
-            inStock.adjustStock(-quantity);
+        if (inStock != null && inStock.canReserveQuantity(quantity) && quantity > 0) {
+            inStock.reserveStock(quantity);
             return quantity;
         }
         return 0;

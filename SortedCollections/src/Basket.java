@@ -1,14 +1,15 @@
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Basket {
     private final String name;
     private final Map<StockItem, Integer> list;
 
     public Basket(String name) {
+        // Como stockItems extienden de comparador, el treeMap los organiza alfabéticamente de forma automática.
+        this.list = new TreeMap<>();
         this.name = name;
-        this.list = new HashMap<>();
     }
 
     public int addToBasket(StockItem item, int quantity) {
@@ -26,7 +27,8 @@ public class Basket {
 
     @Override
     public String toString() {
-        String s = "\nShopping basket " + name + " contains " + list.size() + " items,";
+        String s = "\nShopping basket " + name + " contains " + list.size()
+                + (list.size() == 1 ? " item" : " items") + ":\n";
         double totalValue = 0;
         for (Map.Entry<StockItem, Integer> item : list.entrySet()) {
             s += item.getKey() + ". " + item.getValue() + " purchased\n";
