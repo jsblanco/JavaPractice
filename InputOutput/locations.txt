@@ -1,0 +1,6 @@
+0,Te vas de Kamurocho por el arco de Tenkaichi St.
+1,Estás en la azotea de la Millenium Tower
+2,Estás en el Sega de Theatre Square jugando a MesuKing
+3,Estás en Earth Angel tomándote un copazo
+4,Estás en Don Quijote cantando la musiquilla
+5,Estás en Kamurocho Hills en la planta baja
