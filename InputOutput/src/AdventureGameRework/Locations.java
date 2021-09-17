@@ -9,10 +9,10 @@ public class Locations implements Map<Integer, Location> {
 
     static {
         try {
-            //    readDataFromFileWithResources();
-
-            readDataFromBinaryFile();
-        } catch (IOException e) {
+            // readDataFromFileWithResources();
+            // readDataFromBinaryFile();
+            readSerialisedObjects();
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -21,6 +21,28 @@ public class Locations implements Map<Integer, Location> {
         // populateLocations();
         // writeDataToFileWithResources();
         // writeDataToByteFormat();
+        serializeObjects();
+    }
+
+    private static void serializeObjects() throws IOException {
+        try (ObjectOutputStream locFile = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))) {
+            for (Location location : locations.values()) locFile.writeObject(location);
+        }
+    }
+
+    private static void readSerialisedObjects() throws IOException, ClassNotFoundException {
+        try (ObjectInputStream locFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
+            boolean eof = false;
+            while (!eof) {
+                try {
+                    Location location = (Location) locFile.readObject();
+                    System.out.println("Location " + location.getLocationId() + ": " + location.getDescription());
+                    locations.put(location.getLocationId(), location);
+                } catch (EOFException e) {
+                    eof = true;
+                }
+            }
+        }
     }
 
     private static void readDataFromBinaryFile() throws IOException {
@@ -158,6 +180,7 @@ public class Locations implements Map<Integer, Location> {
         FileWriter locFile = null;
 ////      Gracias a incluir el error que esperamos al definir el método, podemos prescindir de los Catch
 ////      (excepto si queremos hacer algo específico más que meramente mostrar el error)
+////      Sino deberíaos incluir un try catch para el locFile close en el Finally.
         try {
             locFile = new FileWriter("locations.txt");
             for (Location location : locations.values())
@@ -165,22 +188,6 @@ public class Locations implements Map<Integer, Location> {
         } finally {
             if (locFile != null) locFile.close();
         }
-
-//        try {
-//            locFile = new FileWriter("locations.txt");
-//            for (Location location : locations.values())
-//                locFile.write(location.getLocationId() + "," + location.getDescription() + "\n");
-//        } catch (IOException e) {
-//            System.out.println("Exception catched upon writing file");
-//            e.printStackTrace();
-//        } finally {
-//            System.out.println("Finally...");
-//            try {
-//                if (locFile != null) locFile.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     private static void populateLocations() {
