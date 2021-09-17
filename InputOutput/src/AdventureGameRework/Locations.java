@@ -16,8 +16,27 @@ public class Locations implements Map<Integer, Location> {
     }
 
     public static void main(String[] args) throws IOException {
-       // populateLocations();
-        writeDataToFileWithResources();
+        // populateLocations();
+        // writeDataToFileWithResources();
+        writeDataToByteFormat();
+    }
+
+    private static void writeDataToByteFormat() throws IOException {
+        try (DataOutputStream locFile = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))) {
+            for (Location location : locations.values()) {
+//                System.out.println("Writing location " + location.getLocationId() + ", " + location.getDescription());
+                locFile.writeInt(location.getLocationId());
+                locFile.writeUTF(location.getDescription());
+//                System.out.println("\t This location has " + location.getExits().size() + " exits:" );
+                locFile.writeInt(location.getExits().size() - 1);
+                for (String direction : location.getExits().keySet())
+                    if (!direction.equalsIgnoreCase("Q")) {
+//                        System.out.println("\t\t " + direction + ", " + location.getExits().get(direction));
+                        locFile.writeUTF(direction);
+                        locFile.writeInt(location.getExits().get(direction));
+                    }
+            }
+        }
     }
 
     private static void readDataFromFileWithResources() throws IOException {
@@ -99,7 +118,7 @@ public class Locations implements Map<Integer, Location> {
             for (Location location : locations.values()) {
                 locFile.write(location.getLocationId() + "," + location.getDescription() + "\n");
                 for (String direction : location.getExits().keySet())
-                    if (!direction.equals("Q"))
+                    if (!direction.equalsIgnoreCase("Q"))
                         dirFile.write(location.getLocationId()
                                 + "," + direction
                                 + "," + location.getExits().get(direction)
