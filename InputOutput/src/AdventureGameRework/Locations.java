@@ -9,7 +9,9 @@ public class Locations implements Map<Integer, Location> {
 
     static {
         try {
-            readDataFromFileWithResources();
+            //    readDataFromFileWithResources();
+
+            readDataFromBinaryFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -18,7 +20,32 @@ public class Locations implements Map<Integer, Location> {
     public static void main(String[] args) throws IOException {
         // populateLocations();
         // writeDataToFileWithResources();
-        writeDataToByteFormat();
+        // writeDataToByteFormat();
+    }
+
+    private static void readDataFromBinaryFile() throws IOException {
+        try (DataInputStream locFile = new DataInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
+            boolean eof = false;
+            while (!eof) {
+                try {
+                    Map<String, Integer> exits = new LinkedHashMap<>();
+                    int locId = locFile.readInt();
+                    String description = locFile.readUTF();
+                    System.out.println("Reading location " + locId + ": " + description);
+                    int exitNum = locFile.readInt();
+                    System.out.println("\t Found " + exitNum + " exits:");
+                    for (int i = 0; i < exitNum; i++) {
+                        String direction = locFile.readUTF();
+                        int destination = locFile.readInt();
+                        exits.put(direction, destination);
+                        System.out.println("\t\t" + direction + ", " + destination);
+                    }
+                    locations.put(locId, new Location(locId, description, exits));
+                } catch (EOFException e) {
+                    eof = true;
+                }
+            }
+        }
     }
 
     private static void writeDataToByteFormat() throws IOException {
