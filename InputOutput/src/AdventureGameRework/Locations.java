@@ -1,29 +1,50 @@
 package AdventureGameRework;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 // Esta clase se comporta como un Map normal, pero podemos customizarla para cargar información de archivos, etc.
 public class Locations implements Map<Integer, Location> {
-    private static final Map<Integer, Location> locations = new HashMap<>();
+    private static final Map<Integer, Location> locations = new LinkedHashMap<>();
 
     static {
-        // populateLocations();
-        readDataFromFileBeforeJava7();
+        try {
+            readDataFromFileWithResources();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) throws IOException {
-        populateLocations();
-        writeDataToFileAfterJava7();
+       // populateLocations();
+        writeDataToFileWithResources();
+    }
+
+    private static void readDataFromFileWithResources() throws IOException {
+        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader("locations_big.txt")))) {
+            scanner.useDelimiter(",");
+            while (scanner.hasNextLine()) {
+                int loc = scanner.nextInt();
+                scanner.skip(scanner.delimiter());
+                String description = scanner.nextLine();
+                locations.put(loc, new Location(loc, description, new LinkedHashMap<>()));
+            }
+        }
+
+        try (BufferedReader dirFile = new BufferedReader(new FileReader("directions_big.txt"))) {
+            String input;
+            while ((input = dirFile.readLine()) != null) {
+                String[] data = input.split(",");
+                Location location = locations.get(Integer.parseInt(data[0]));
+                location.addExit(data[1], Integer.parseInt(data[2]));
+            }
+        }
     }
 
     private static void readDataFromFileBeforeJava7() {
         Scanner scanner = null;
         try {
-            scanner = new Scanner(new FileReader("locations.txt"));
+            scanner = new Scanner(new FileReader("locations_big.txt"));
             scanner.useDelimiter(",");
             while (scanner.hasNextLine()) {
                 int loc = scanner.nextInt();
@@ -41,7 +62,7 @@ public class Locations implements Map<Integer, Location> {
         // BufferedReader crea un array de caracteres del archivo leido para el scanner.
         // Permite un mayor rendimiento, al evitar los instantes perdidos buscando en el disco duro.
         try {
-            scanner = new Scanner(new BufferedReader(new FileReader("directions.txt")));
+            scanner = new Scanner(new BufferedReader(new FileReader("directions_big.txt")));
 
             scanner.useDelimiter(",");
             while (scanner.hasNextLine()) {
@@ -68,17 +89,21 @@ public class Locations implements Map<Integer, Location> {
 
     }
 
-    private static void writeDataToFileAfterJava7() throws IOException {
+    private static void writeDataToFileWithResources() throws IOException {
 //      try with resources cierra los streams automáticamente,
 //      Si hay errores en el Try subirá ese error e ignorará los errores causados al cerrar el stream
         try (
-                FileWriter locFile = new FileWriter("locations.txt");
-                FileWriter dirFile = new FileWriter("directions.txt")
+                BufferedWriter locFile = new BufferedWriter(new FileWriter("locations.txt"));
+                BufferedWriter dirFile = new BufferedWriter(new FileWriter("directions.txt"))
         ) {
             for (Location location : locations.values()) {
                 locFile.write(location.getLocationId() + "," + location.getDescription() + "\n");
                 for (String direction : location.getExits().keySet())
-                    dirFile.write(location.getLocationId() + "," + direction + "," + location.getExits().get(direction) + '\n');
+                    if (!direction.equals("Q"))
+                        dirFile.write(location.getLocationId()
+                                + "," + direction
+                                + "," + location.getExits().get(direction)
+                                + '\n');
             }
         }
     }
@@ -138,7 +163,7 @@ public class Locations implements Map<Integer, Location> {
         exits = new HashMap<>();
         exits.put("Q", 1);
         exits.put("W", 2);
-        locations.put(5, new Location(5, "Estás en Kamurocho Hills en la planta baja", exits));
+        locations.put(5, new Location(5, "Estás en la planta baja de Kamurocho Hills", exits));
     }
 
     @Override

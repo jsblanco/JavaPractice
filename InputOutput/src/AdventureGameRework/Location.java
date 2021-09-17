@@ -1,6 +1,7 @@
 package AdventureGameRework;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class Location {
@@ -11,7 +12,7 @@ public final class Location {
     public Location(int locationId, String description, Map<String, Integer> exits) {
         this.locationId = locationId;
         this.description = description;
-        this.exits = exits == null ? new HashMap<>() : new HashMap<>(exits);
+        this.exits = exits == null ? new LinkedHashMap<>() : new LinkedHashMap<>(exits);
         this.exits.put("Q", 0);
     }
 
@@ -24,7 +25,7 @@ public final class Location {
     }
 
     public Map<String, Integer> getExits() {
-        return new HashMap<>(exits);
+        return new LinkedHashMap<>(exits);
     }
 
     protected void addExit(String direction, int location){

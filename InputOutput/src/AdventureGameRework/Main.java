@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Main {
     private static final Locations locations = new Locations();
-    private static final Map<String, String> vocabulary = new HashMap<String, String>();
+    private static final Map<String, String> vocabulary = new HashMap<>();
     private static int loc;
 
     public static void main(String[] args) {
