@@ -1,4 +1,4 @@
-package AdventureGameRework;
+package AdventureGameRAF;
 
 import java.io.*;
 import java.util.*;
@@ -6,11 +6,10 @@ import java.util.*;
 // Esta clase se comporta como un Map normal, pero podemos customizarla para cargar información de archivos, etc.
 public class Locations implements Map<Integer, Location> {
     private static final Map<Integer, Location> locations = new LinkedHashMap<>();
+    private static final Map<Integer, IndexRecord> index = new LinkedHashMap<>();
 
     static {
         try {
-            // readDataFromFileWithResources();
-            // readDataFromBinaryFile();
             readSerialisedObjects();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -18,25 +17,58 @@ public class Locations implements Map<Integer, Location> {
     }
 
     public static void main(String[] args) throws IOException {
-        // populateLocations();
-        // writeDataToFileWithResources();
-        // writeDataToByteFormat();
-        serializeObjects();
+        indexAndSerializeLocations();
+    }
+
+    private static void indexAndSerializeLocations() throws IOException {
+        // El 1o parámetro indica que queremos abrir el archivo para leer y escribir, y que escrituras ocurran sincrónicamente.
+        // Con este parámetro la clase RAF se ocupará de sincronizar los datos escritos, sino deberíamos hacerlo nosotros.
+        try (RandomAccessFile rao = new RandomAccessFile("locations_rand.dat", "rwd")) {
+            // 1. Los primeros 4 bytes tendrán el número de localizaciones /bytes 0 a 3)
+            // 2. Los siguientes 4 bytes tendrán el offset inicial de la sección de localizaciones (bytes 4 a 7)
+            // 3. La siguiente sección contendrá el índice al completo (bytes 8 a 1699);
+            // 4. Finalmente vienen las localizaciones en sí, empezando en el byte 1700.
+            rao.writeInt(locations.size());
+
+            int indexSize = locations.size() * Integer.BYTES * 3;
+            int locationStart = (int) (indexSize + rao.getFilePointer() + Integer.BYTES);
+            rao.write(locationStart);
+
+            // Primero anotaremos todas las localizaciones, y después crearemos el índice de golpe.
+            long indexStart = rao.getFilePointer();
+
+            int startPointer = locationStart;
+            rao.seek(startPointer);
+
+            for (Location location : locations.values()) {
+                rao.writeInt(location.getLocationId());
+                rao.writeUTF(location.getDescription());
+                StringBuilder builder = new StringBuilder();
+                for (String direction : location.getExits().keySet()) {
+                    if (!direction.equalsIgnoreCase("Q")) {
+                        builder.append(direction);
+                        builder.append(",");
+                        builder.append(location.getExits().get(direction));
+                        builder.append(",");
+                    }
+                }
+                rao.writeUTF(builder.toString());
+                IndexRecord record = new IndexRecord(startPointer, (int) rao.getFilePointer() - startPointer);
+                index.put(location.getLocationId(), record);
+                startPointer = (int) rao.getFilePointer();
+            }
+        }
+
     }
 
     private static void serializeObjects() throws IOException {
-        try (ObjectOutputStream locFile = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))) {
+        try (ObjectOutputStream locFile = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("locations_raf.dat")))) {
             for (Location location : locations.values()) locFile.writeObject(location);
         }
     }
 
-    // 1. Los primeros 4 bytes tendrán el número de localizaciones /bytes 0 a 3)
-    // 2. Los siguientes 4 bytes tendrán el offset inicial de la sección de localizaciones (bytes 4 a 7)
-    // 3. La siguiente sección contendrá el índice al completo (bytes 8 a 1699);
-    // 4. Finalmente vienen las localizaciones en sí, empezando en el byte 1700.
-
     private static void readSerialisedObjects() throws IOException, ClassNotFoundException {
-        try (ObjectInputStream locFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
+        try (ObjectInputStream locFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations_raf.dat")))) {
             boolean eof = false;
             while (!eof) {
                 try {
@@ -179,49 +211,6 @@ public class Locations implements Map<Integer, Location> {
                                 + '\n');
             }
         }
-    }
-
-    private static void writeToFileBeforeJava7() throws IOException {
-        FileWriter locFile = null;
-////      Gracias a incluir el error que esperamos al definir el método, podemos prescindir de los Catch
-////      (excepto si queremos hacer algo específico más que meramente mostrar el error)
-////      Sino deberíaos incluir un try catch para el locFile close en el Finally.
-        try {
-            locFile = new FileWriter("locations.txt");
-            for (Location location : locations.values())
-                locFile.write(location.getLocationId() + "," + location.getDescription() + "\n");
-        } finally {
-            if (locFile != null) locFile.close();
-        }
-    }
-
-    private static void populateLocations() {
-        locations.put(0, new Location(0, "Te vas de Kamurocho por el arco de Tenkaichi St.", null));
-
-        Map<String, Integer> exits = new LinkedHashMap<>();
-        exits.put("N", 5);
-        exits.put("S", 4);
-        exits.put("E", 3);
-        exits.put("W", 2);
-        locations.put(1, new Location(1, "Estás en la azotea de la Millenium Tower", exits));
-
-        exits = new LinkedHashMap<>();
-        exits.put("N", 5);
-        locations.put(2, new Location(2, "Estás en el Sega de Theatre Square jugando a MesuKing", exits));
-
-        exits = new LinkedHashMap<>();
-        exits.put("W", 1);
-        locations.put(3, new Location(3, "Estás en Earth Angel tomándote un copazo", exits));
-
-        exits = new LinkedHashMap<>();
-        exits.put("N", 1);
-        exits.put("W", 2);
-        locations.put(4, new Location(4, "Estás en Don Quijote cantando la musiquilla", exits));
-
-        exits = new LinkedHashMap<>();
-        exits.put("Q", 1);
-        exits.put("W", 2);
-        locations.put(5, new Location(5, "Estás en la planta baja de Kamurocho Hills", exits));
     }
 
     @Override
