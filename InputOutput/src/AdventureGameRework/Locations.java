@@ -30,11 +30,6 @@ public class Locations implements Map<Integer, Location> {
         }
     }
 
-    // 1. Los primeros 4 bytes tendrán el número de localizaciones /bytes 0 a 3)
-    // 2. Los siguientes 4 bytes tendrán el offset inicial de la sección de localizaciones (bytes 4 a 7)
-    // 3. La siguiente sección contendrá el índice al completo (bytes 8 a 1699);
-    // 4. Finalmente vienen las localizaciones en sí, empezando en el byte 1700.
-
     private static void readSerialisedObjects() throws IOException, ClassNotFoundException {
         try (ObjectInputStream locFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
             boolean eof = false;
@@ -261,13 +256,13 @@ public class Locations implements Map<Integer, Location> {
 
     @Override
     public void putAll(Map<? extends Integer, ? extends Location> m) {
-
+        for (Location location : m.values())
+            locations.put(location.getLocationId(), location);
     }
 
     @Override
     public void clear() {
         locations.clear();
-
     }
 
     @Override

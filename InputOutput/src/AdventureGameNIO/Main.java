@@ -1,6 +1,5 @@
-package AdventureGameRAF;
+package AdventureGameNIO;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -8,26 +7,25 @@ import java.util.Scanner;
 public class Main {
     private static final Locations locations = new Locations();
     private static final Map<String, String> vocabulary = new HashMap<>();
-    private static Location currentLocation;
+    private static int loc;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         startGame();
     }
 
-    private static void startGame() throws IOException {
-        currentLocation = locations.getLocation(64);
+    private static void startGame() {
+        loc = 1;
         populateVocabulary();
         System.out.println("¡Bienvenido a Kamurocho!\nComienza a explorar sus calles.");
         startGameLoop();
     }
 
-    private static void startGameLoop() throws IOException {
+    private static void startGameLoop() {
         while (true) {
-            System.out.println(currentLocation.getDescription());
-            if (currentLocation.getLocationId() == 0) break;
+            System.out.println(locations.get(loc).getDescription());
+            if (loc == 0) break;
 
-            Map<String, Integer> exits = currentLocation.getExits();
-            System.out.println(exits.keySet());
+            Map<String, Integer> exits = locations.get(loc).getExits();
             stateExits(exits);
 
             String direction = getDirection();
@@ -42,9 +40,9 @@ public class Main {
         System.out.println();
     }
 
-    private static void changeLocation(Map<String, Integer> exits, String direction) throws IOException {
+    private static void changeLocation(Map<String, Integer> exits, String direction) {
         if (exits.containsKey(direction))
-            currentLocation = locations.getLocation(exits.get(direction));
+            loc = exits.get(direction);
         else
             System.out.println("No puedes ir ahí.");
     }
