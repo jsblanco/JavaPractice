@@ -1,6 +1,6 @@
-package com.company;
+package com.company.base;
 
-import static com.company.ThreadColor.ANSI_RED;
+import static com.company.base.ThreadColor.ANSI_RED;
 
 public class MyRunnable implements Runnable {
     @Override

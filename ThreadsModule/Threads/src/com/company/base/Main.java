@@ -1,6 +1,6 @@
-package com.company;
+package com.company.base;
 
-import static com.company.ThreadColor.*;
+import static com.company.base.ThreadColor.*;
 
 public class Main {
 
